@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    # Значения из переменных окружения подставятся сюда
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/coffee}
+    username: ${SPRING_DATASOURCE_USERNAME:coffee_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:coffee_pass}

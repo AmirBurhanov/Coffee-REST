@@ -1,0 +1,31 @@
+version: '3.9' # Используем актуальную версию спецификации
+
+services:
+  # Сервис нашего приложения
+  app:
+    build: . # Dockerfile находится в текущей директории
+    ports:
+      - "8080:8080" # Пробрасываем порт 8080 из контейнера на хост
+    environment:
+      # Переменные окружения для подключения к БД
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/coffee
+      SPRING_DATASOURCE_USERNAME: coffee_user
+      SPRING_DATASOURCE_PASSWORD: coffee_pass
+    volumes:
+      - ./config/application.yml:app/application.yml
+    depends_on:
+      - db # Указываем, что приложение зависит от сервиса db и должно ждать его запуска
+
+  # Сервис базы данных PostgreSQL
+  db:
+    image: postgres:16-alpine # Используем легковесный официальный образ
+    environment:
+      POSTGRES_DB: coffee # Имя базы данных, которое будет создано при старте
+      POSTGRES_USER: coffee_user # Имя пользователя БД
+      POSTGRES_PASSWORD: coffee_pass # Пароль пользователя БД
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Подключаем том для хранения данных
+
+# Определение тома для данных БД (чтобы они не пропадали после остановки контейнера)
+volumes:
+  pgdata:
