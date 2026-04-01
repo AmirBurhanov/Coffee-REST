@@ -1,6 +1,7 @@
 package com.example.chapter4.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -48,7 +49,16 @@ public class UserService {
         repository.delete(entity);
     }
 
-    public void createUser(RequestUser user) {
-        User newUser = repository.findByName(user.getName());
+    public ResponseUser createUser(RequestUser requestUser) {
+        Optional<User> newUser = repository.findByName(requestUser.getName());
+        if (newUser.isPresent()) {
+            throw new RuntimeException("User alredy exists with name " + requestUser.getName());
+        }
+
+        User user = mapper.toEntity(requestUser);
+
+        User saved = repository.save(user);
+
+        return mapper.toResponse(saved);
     }
 }

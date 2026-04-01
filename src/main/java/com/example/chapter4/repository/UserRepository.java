@@ -1,5 +1,6 @@
 package com.example.chapter4.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import com.example.chapter4.model.User;
@@ -9,6 +10,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     User findByNameIgnoreCase(String name);
 
-    User findByName(String name);
+    Optional<User> findByName(String name);
 
 }
