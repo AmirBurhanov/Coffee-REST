@@ -1,7 +1,6 @@
 package com.example.chapter4.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -39,7 +38,7 @@ public class CoffeeService {
     }
 
     public ResponseGetCoffee findById(UUID id) {
-        Optional<Coffee> coffee = repository.findById(id).orElseThrow(() -> throw new RuntimeException("not coffee db"));
+        Coffee coffee = repository.findById(id).orElseThrow(() -> new RuntimeException("not coffee db"));
         return mapper.toResponse(coffee);
     }
 

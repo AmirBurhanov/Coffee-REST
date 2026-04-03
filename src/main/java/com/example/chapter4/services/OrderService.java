@@ -62,13 +62,11 @@ public class OrderService {
         orderRepository.delete(id);
     }
 
-    public List<ResponseOrder> findByOrder(String name) {
-        User entity = userRepository.findByNameIgnoreCase(name);
-        if (entity == null) {
-            throw new RuntimeException("not user in db");
-        }
+    public List<ResponseOrder> findOrdersByUserName(String name) {
+        User user = userRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new RuntimeException("User not found with name: " + name));
 
-        List<Order> orders = orderRepository.findByUserId(entity.getId());
+        List<Order> orders = orderRepository.findByUserId(user.getId());
 
         return orders.stream()
                 .map(mapper::toResponse)

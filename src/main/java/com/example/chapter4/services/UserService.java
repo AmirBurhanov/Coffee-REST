@@ -4,15 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Service;
-
 import com.example.chapter4.dto.request.RequestUser;
 import com.example.chapter4.dto.response.ResponseUser;
 import com.example.chapter4.mapper.UserMapper;
 import com.example.chapter4.model.User;
 import com.example.chapter4.repository.UserRepository;
-
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
@@ -34,18 +32,19 @@ public class UserService {
     }
 
     public ResponseUser findByUser(RequestUser user) {
-        User r = repository.findByNameIgnoreCase(user.getName());
-        if (r == null) {
+        Optional<User> optional = repository.findByNameIgnoreCase(user.getName());
+
+        if (optional.isEmpty()) {
             throw new RuntimeException("User not found");
         }
-        return mapper.toResponse(r);
+
+        return mapper.toResponse(optional.get());
     }
 
     public void delete(RequestUser user) {
-        User entity = repository.findByNameIgnoreCase(user.getName());
-        if (entity == null) {
-            throw new RuntimeException("not found user");
-        }
+        User entity = repository.findByNameIgnoreCase(user.getName())
+                .orElseThrow(() -> new RuntimeException("User not found with name: " + user.getName()));
+
         repository.delete(entity);
     }
 
@@ -60,5 +59,15 @@ public class UserService {
         User saved = repository.save(user);
 
         return mapper.toResponse(saved);
+    }
+
+    public ResponseUser findByNameIgnoreCase(String name) {
+        User user = repository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new RuntimeException("User not found with name: " + name));
+        return mapper.toResponse(user);
+    }
+
+    public void deleteByName(String name) {
+        repository.deleteByName(name);
     }
 }
