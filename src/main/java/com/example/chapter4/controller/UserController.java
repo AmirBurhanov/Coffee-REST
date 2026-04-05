@@ -34,7 +34,7 @@ public class UserController {
         return service.findAllUser();
     }
 
-    @GetMapping
+    @GetMapping("/name")
     public ResponseUser findByName(@RequestParam String name) {
         return service.findByNameIgnoreCase(name);
     }

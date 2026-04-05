@@ -1,31 +1,61 @@
-version: '3.9' # Используем актуальную версию спецификации
+version: '3.9'
 
 services:
-  # Сервис нашего приложения
   app:
-    build: . # Dockerfile находится в текущей директории
+    build: .
+    container_name: chapter4-app
     ports:
-      - "8080:8080" # Пробрасываем порт 8080 из контейнера на хост
+      - "8080:8080"
     environment:
-      # Переменные окружения для подключения к БД
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/coffee
       SPRING_DATASOURCE_USERNAME: coffee_user
       SPRING_DATASOURCE_PASSWORD: coffee_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     volumes:
-      - ./config/application.yml:app/application.yml
+      - ./config/application.yml:/app/application.yml
     depends_on:
-      - db # Указываем, что приложение зависит от сервиса db и должно ждать его запуска
+      db:
+        condition: service_healthy
+    networks:
+      - chapter4-network
+    restart: unless-stopped
 
-  # Сервис базы данных PostgreSQL
   db:
-    image: postgres:16-alpine # Используем легковесный официальный образ
+    image: postgres:16-alpine
+    container_name: chapter4-db
+    ports:
+      - "5432:5432"  # Проброс порта для доступа с хоста
     environment:
-      POSTGRES_DB: coffee # Имя базы данных, которое будет создано при старте
-      POSTGRES_USER: coffee_user # Имя пользователя БД
-      POSTGRES_PASSWORD: coffee_pass # Пароль пользователя БД
+      POSTGRES_DB: coffee
+      POSTGRES_USER: coffee_user
+      POSTGRES_PASSWORD: coffee_pass
+      POSTGRES_HOST_AUTH_METHOD: md5
     volumes:
-      - pgdata:/var/lib/postgresql/data # Подключаем том для хранения данных
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - chapter4-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coffee_user -d coffee"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
-# Определение тома для данных БД (чтобы они не пропадали после остановки контейнера)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: chapter4-pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    networks:
+      - chapter4-network
+    restart: unless-stopped
+
+networks:
+  chapter4-network:
+    driver: bridge
+
 volumes:
   pgdata:

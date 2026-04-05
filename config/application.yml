@@ -1,6 +1,23 @@
 spring:
   datasource:
-    # Значения из переменных окружения подставятся сюда
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/coffee}
     username: ${SPRING_DATASOURCE_USERNAME:coffee_user}
     password: ${SPRING_DATASOURCE_PASSWORD:coffee_pass}
+    driver-class-name: org.postgresql.Driver
+  
+  # Добавьте JPA настройки
+  jpa:
+    hibernate:
+      ddl-auto: update  # Создаёт таблицы автоматически
+    show-sql: true      # Показывает SQL запросы в логах
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    defer-datasource-initialization: true  # Инициализирует данные после создания схемы
+
+# Опционально: логирование Hibernate
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

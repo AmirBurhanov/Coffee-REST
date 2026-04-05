@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    void delete(UUID id);
+    void deleteById(UUID id);
 
     List<Order> findByUserId(UUID id);
 }

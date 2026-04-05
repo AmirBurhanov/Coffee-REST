@@ -11,5 +11,4 @@ public interface CoffeeMapper {
     Coffee toEntity(RequestGetCoffee request);
 
     ResponseGetCoffee toResponse(Coffee coffee);
-
 }

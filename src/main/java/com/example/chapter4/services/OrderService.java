@@ -59,7 +59,7 @@ public class OrderService {
             throw new RuntimeException("is empty order");
         }
 
-        orderRepository.delete(id);
+        orderRepository.deleteById(id);
     }
 
     public List<ResponseOrder> findOrdersByUserName(String name) {
